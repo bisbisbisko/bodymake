@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Protocol — 42M Body Optimization</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --border: #1e2128;
+    --accent: #c8f060;
+    --accent2: #60d4f0;
+    --text: #e8eaf0;
+    --muted: #7a7f92;
+    --meal: #60d4f0;
+    --suppl: #c8f060;
+    --train: #f060a0;
+    --life: #f0a060;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,240,96,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,240,96,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 56px 32px 100px;
+  }
+
+  header {
+    margin-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    color: var(--text);
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .legend {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 90px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border) 5%, var(--border) 95%, transparent);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 96px 1fr 1fr 1fr;
+    position: relative;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeIn 0.4s ease forwards;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .row:nth-child(1)  { animation-delay: 0.05s; }
+  .row:nth-child(2)  { animation-delay: 0.10s; }
+  .row:nth-child(3)  { animation-delay: 0.15s; }
+  .row:nth-child(4)  { animation-delay: 0.20s; }
+  .row:nth-child(5)  { animation-delay: 0.25s; }
+  .row:nth-child(6)  { animation-delay: 0.30s; }
+  .row:nth-child(7)  { animation-delay: 0.35s; }
+  .row:nth-child(8)  { animation-delay: 0.40s; }
+  .row:nth-child(9)  { animation-delay: 0.45s; }
+  .row:nth-child(10) { animation-delay: 0.50s; }
+
+  @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+  .row.header-row {
+    opacity: 1; transform: none; animation: none;
+    margin-bottom: 16px;
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    padding: 14px 0;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .col-header {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0 20px;
+  }
+  .col-header.meal  { color: var(--meal); }
+  .col-header.suppl { color: var(--suppl); }
+  .col-header.train { color: var(--train); }
+
+  .time-col {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 24px;
+    position: relative;
+  }
+
+  .time-col::after {
+    content: '';
+    position: absolute;
+    right: -5px; top: 30px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    z-index: 2;
+  }
+
+  .time-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px; font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .cell {
+    border-left: 1px solid var(--border);
+    padding: 20px;
+    min-height: 100px;
+    transition: background 0.2s;
+  }
+
+  .cell-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 18px; font-weight: 700;
+    width: fit-content;
+  }
+  .pill.meal  { background: rgba(96,212,240,0.12); color: var(--meal);  border: 1px solid rgba(96,212,240,0.25); }
+  .pill.suppl { background: rgba(200,240,96,0.12); color: var(--suppl); border: 1px solid rgba(200,240,96,0.25); }
+  .pill.train { background: rgba(240,96,160,0.12); color: var(--train); border: 1px solid rgba(240,96,160,0.25); }
+  .pill.life  { background: rgba(240,160,96,0.12); color: var(--life);  border: 1px solid rgba(240,160,96,0.25); }
+
+  .pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .meal  .pill-dot { background: var(--meal); }
+  .suppl .pill-dot { background: var(--suppl); }
+  .train .pill-dot { background: var(--train); }
+  .life  .pill-dot { background: var(--life); }
+
+  .cell-title {
+    font-size: 22px; font-weight: 700;
+    color: #ffffff; line-height: 1.3;
+  }
+
+  .cell-detail {
+    font-size: 18px; font-weight: 500;
+    color: var(--muted); line-height: 1.7;
+  }
+  .cell-detail span { display: block; }
+
+  .highlight {
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 700;
+  }
+
+  .note-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    background: rgba(240,160,96,0.1);
+    color: var(--life);
+    border: 1px solid rgba(240,160,96,0.2);
+    width: fit-content;
+    margin-top: 4px;
+  }
+
+  /* ── 筋トレ 2コース ── */
+  .courses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .course-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .course-head {
+    padding: 12px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .course-head.squat { background: rgba(96,212,240,0.15); color: var(--meal);  border-bottom: 1px solid rgba(96,212,240,0.2); }
+  .course-head.push  { background: rgba(240,96,160,0.15);  color: var(--train); border-bottom: 1px solid rgba(240,96,160,0.2); }
+
+  .course-body { padding: 14px 18px; background: rgba(255,255,255,0.02); }
+
+  .course-day {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px; font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+
+  .course-moves {
+    font-size: 17px; font-weight: 600;
+    color: #ffffff; line-height: 2.1;
+  }
+
+  .course-moves span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .course-moves span::before {
+    content: '›';
+    font-size: 22px; font-weight: 700;
+    opacity: 0.4; flex-shrink: 0;
+  }
+
+  .rest-row {
+    margin-top: 12px;
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .rest-day { color: #ffffff; font-size: 22px; }
+
+  /* Notes */
+  .notes-section {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .note-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    opacity: 0;
+    animation: fadeIn 0.4s ease 0.7s forwards;
+  }
+
+  .note-card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    color: var(--muted);
+  }
+
+  .note-item {
+    font-size: 17px; font-weight: 600;
+    color: var(--muted); line-height: 1.7;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .note-item:last-child { border-bottom: none; }
+  .note-item::before {
+    content: '→';
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+    font-size: 16px;
+    margin-top: 2px;
+  }
+
+  .monitor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .monitor-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+  }
+
+  .monitor-label {
+    font-size: 15px; font-weight: 700;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .monitor-value {
+    font-size: 22px;
+    color: var(--accent2);
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">42M · Body Optimization Protocol · 2025</div>
+    <h1>Daily <em>Precision</em><br>Schedule</h1>
+    <div class="subtitle">06:30 — 22:30 · Protein 72g/day · H₂O 2.5–3.0L</div>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--meal)"></div>食事</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--suppl)"></div>サプリ</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--train)"></div>筋トレ・運動</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--life)"></div>ライフスタイル</div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="row header-row">
+      <div></div>
+      <div class="col-header meal">食事</div>
+      <div class="col-header suppl">サプリ</div>
+      <div class="col-header train">筋トレ・運動</div>
+    </div>
+
+    <!-- 06:30 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">06:30</div></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill life"><span class="pill-dot"></span>起床</div>
+          <div class="cell-title">白湯 500mL</div>
+          <div class="cell-detail"><span>＋ レモン汁少量</span></div>
+        </div>
+      </div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+
+    <!-- 07:00 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">07:00</div></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill train"><span class="pill-dot"></span>有酸素</div>
+          <div class="cell-title">早歩き 40分</div>
+          <div class="cell-detail"><span>脂肪燃焼の土台づくり</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 08:30 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">08:30</div></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill meal"><span class="pill-dot"></span>朝食</div>
+          <div class="cell-title">タンパク質 24g</div>
+          <div class="cell-detail">
+            <span>卵</span>
+            <span>ほうれん草（茹でこぼし）</span>
+            <span>えだまめ</span>
+            <span>しらす（カルシウム源）</span>
+          </div>
+        </div>
+      </div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill suppl"><span class="pill-dot"></span>サプリ①</div>
+          <div class="cell-detail">
+            <span>AGA薬（フィナステリド・ミノキシジル）</span>
+            <span>ビタミンC <span class="highlight">250mg</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="cell"></div>
+    </div>
+
+    <!-- 12:00 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">12:00</div></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill meal"><span class="pill-dot"></span>昼食</div>
+          <div class="cell-title">タンパク質 24g</div>
+          <div class="cell-detail">
+            <span>サケ（EPA/DHA）</span>
+            <span>納豆</span>
+            <span>アボカド</span>
+            <span>ご飯</span>
+          </div>
+        </div>
+      </div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill suppl"><span class="pill-dot"></span>サプリ②</div>
+          <div class="cell-detail">
+            <span>ビタミンD・K</span>
+            <span>EPA/DHA</span>
+            <span>アスタキサンチン</span>
+            <div class="note-tag">油分含む食後に摂取</div>
+          </div>
+        </div>
+      </div>
+      <div class="cell"></div>
+    </div>
+
+    <!-- 15:00 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">15:00</div></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill meal"><span class="pill-dot"></span>間食</div>
+          <div class="cell-detail">
+            <span>ブルーベリー</span>
+            <span>ソイプロテイン（水割）</span>
+          </div>
+        </div>
+      </div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill suppl"><span class="pill-dot"></span>サプリ③</div>
+          <div class="cell-detail">
+            <span>亜鉛（銅入り）</span>
+            <span>ホスファチジルセリン <span class="highlight">200-300mg</span></span>
+            <div class="note-tag">抗ヒスタミン薬と2h以上ずらす</div>
+          </div>
+        </div>
+      </div>
+      <div class="cell"></div>
+    </div>
+
+    <!-- 18:00 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">18:00</div></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill train"><span class="pill-dot"></span>筋トレ</div>
+          <div class="cell-title">スロートレーニング 30分</div>
+          <div class="cell-detail"><span>4秒↓ 静止なし 4秒↑｜朝の有酸素と3h以上の間隔</span></div>
+
+          <div class="courses">
+            <div class="course-card">
+              <div class="course-head squat">🦵 スクワット・プランク</div>
+              <div class="course-body">
+                <div class="course-day">月・水・金</div>
+                <div class="course-moves">
+                  <span>スロースクワット 3×10</span>
+                  <span>スローランジ 3×10（片脚）</span>
+                  <span>スロープランク 3×40秒</span>
+                </div>
+              </div>
+            </div>
+            <div class="course-card">
+              <div class="course-head push">💪 腕立て・懸垂・背筋</div>
+              <div class="course-body">
+                <div class="course-day">火・木・土</div>
+                <div class="course-moves">
+                  <span>スロープッシュアップ 3×10</span>
+                  <span>スロー懸垂 5回×3セット</span>
+                  <span>スーパーマン 3×10</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rest-row">
+            <span class="rest-day">日</span>
+            <span>完全休養 — ストレッチ・ウォーキングのみ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 19:30 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">19:30</div></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill meal"><span class="pill-dot"></span>夕食</div>
+          <div class="cell-title">タンパク質 24g</div>
+          <div class="cell-detail">
+            <span>鶏肉 <span class="highlight">70g目安</span></span>
+            <span>豆腐・エノキ</span>
+            <span>たっぷりの野菜</span>
+            <span style="color:var(--train);font-weight:700">白米なし</span>
+          </div>
+        </div>
+      </div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+
+    <!-- 21:00 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">21:00</div></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill life"><span class="pill-dot"></span>ケア・入浴</div>
+          <div class="cell-detail">
+            <span>38〜39度・15分以内</span>
+            <span>側頭筋マッサージ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 22:30 -->
+    <div class="row">
+      <div class="time-col"><div class="time-label">22:30</div></div>
+      <div class="cell">
+        <div class="cell-inner">
+          <div class="pill life"><span class="pill-dot"></span>就寝前</div>
+          <div class="cell-detail">
+            <span>コラーゲンペプチド</span>
+            <span>十分な水分補給</span>
+          </div>
+        </div>
+      </div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+
+  </div>
+
+  <div class="notes-section">
+    <div class="note-card">
+      <div class="note-card-title">注意事項</div>
+      <div class="note-item">抗ヒスタミン薬（べポタスチン・メキタジン）は亜鉛サプリと2時間以上ずらす</div>
+      <div class="note-item">ビタミンC は合計1,000mg/日超えない（腎臓結石リスク）</div>
+      <div class="note-item">アルコールは意識的に量を管理（依存・飲酒量多い傾向あり）</div>
+      <div class="note-item">イソフラボンは食事＋ソイプロテインの合計で管理。週4〜5日にとどめる</div>
+      <div class="note-item">6ヶ月後はゴールではなく確認点。リバウンド体質のため継続が最重要</div>
+    </div>
+    <div class="note-card">
+      <div class="note-card-title">3ヶ月モニタリング指標</div>
+      <div class="monitor-grid">
+        <div class="monitor-item">
+          <div class="monitor-label">肝機能 ALT</div>
+          <div class="monitor-value">≤ 30 IU/L</div>
+        </div>
+        <div class="monitor-item">
+          <div class="monitor-label">腎機能 eGFR</div>
+          <div class="monitor-value">60以上維持</div>
+        </div>
+        <div class="monitor-item">
+          <div class="monitor-label">ホモシステイン</div>
+          <div class="monitor-value">≤ 10 μmol/L</div>
+        </div>
+        <div class="monitor-item">
+          <div class="monitor-label">血圧</div>
+          <div class="monitor-value">&lt; 125/80</div>
+        </div>
+        <div class="monitor-item" style="grid-column:1/-1;">
+          <div class="monitor-label">胃内視鏡（年1回）</div>
+          <div class="monitor-value" style="font-size:18px">NBI/拡大内視鏡 スキルス胃がん早期発見</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
