@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Daily Protocol — 42M Body Optimization</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
 <style>
@@ -27,9 +27,10 @@
     color: var(--text);
     font-family: 'Noto Sans JP', sans-serif;
     font-weight: 500;
-    font-size: 18px;
+    font-size: 15px;
     min-height: 100vh;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
   body::before {
@@ -47,32 +48,33 @@
   .container {
     position: relative;
     z-index: 1;
-    max-width: 1300px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 56px 32px 100px;
+    padding: 40px 16px 80px;
   }
 
+  /* ── ヘッダー ── */
   header {
-    margin-bottom: 56px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    margin-bottom: 40px;
   }
 
   .tag {
     font-family: 'DM Mono', monospace;
-    font-size: 18px;
-    letter-spacing: 0.2em;
+    font-size: 11px;
+    letter-spacing: 0.18em;
     color: var(--muted);
     text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
   }
 
   h1 {
     font-family: 'Fraunces', serif;
     font-weight: 700;
-    font-size: clamp(40px, 6vw, 72px);
+    font-size: clamp(36px, 10vw, 60px);
     line-height: 1.05;
     color: var(--text);
+    margin-bottom: 8px;
   }
 
   h1 em {
@@ -82,188 +84,196 @@
   }
 
   .subtitle {
-    font-size: 18px;
-    color: var(--muted);
-    margin-top: 4px;
     font-family: 'DM Mono', monospace;
+    font-size: 12px;
     letter-spacing: 0.05em;
+    color: var(--muted);
+    line-height: 1.8;
   }
 
+  /* ── 凡例 ── */
   .legend {
     display: flex;
-    gap: 32px;
+    gap: 16px;
     flex-wrap: wrap;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
   }
 
   .legend-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 18px;
+    gap: 7px;
+    font-size: 12px;
     font-family: 'DM Mono', monospace;
     color: var(--muted);
     font-weight: 700;
   }
 
-  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
+  /* ── タイムライン ── */
   .timeline {
     display: flex;
     flex-direction: column;
+    gap: 0;
     position: relative;
   }
 
   .timeline::before {
     content: '';
     position: absolute;
-    left: 90px;
+    left: 52px;
     top: 0; bottom: 0;
     width: 1px;
-    background: linear-gradient(to bottom, transparent, var(--border) 5%, var(--border) 95%, transparent);
+    background: linear-gradient(to bottom, transparent, var(--border) 3%, var(--border) 97%, transparent);
   }
 
-  .row {
-    display: grid;
-    grid-template-columns: 96px 1fr 1fr 1fr;
-    position: relative;
-    opacity: 0;
-    transform: translateY(12px);
-    animation: fadeIn 0.4s ease forwards;
+  /* ── タイムブロック ── */
+  .time-block {
+    display: flex;
+    gap: 0;
+    padding: 20px 0;
     border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeIn 0.4s ease forwards;
   }
 
-  .row:nth-child(1)  { animation-delay: 0.05s; }
-  .row:nth-child(2)  { animation-delay: 0.10s; }
-  .row:nth-child(3)  { animation-delay: 0.15s; }
-  .row:nth-child(4)  { animation-delay: 0.20s; }
-  .row:nth-child(5)  { animation-delay: 0.25s; }
-  .row:nth-child(6)  { animation-delay: 0.30s; }
-  .row:nth-child(7)  { animation-delay: 0.35s; }
-  .row:nth-child(8)  { animation-delay: 0.40s; }
-  .row:nth-child(9)  { animation-delay: 0.45s; }
-  .row:nth-child(10) { animation-delay: 0.50s; }
+  .time-block:nth-child(1)  { animation-delay: 0.05s; }
+  .time-block:nth-child(2)  { animation-delay: 0.10s; }
+  .time-block:nth-child(3)  { animation-delay: 0.15s; }
+  .time-block:nth-child(4)  { animation-delay: 0.20s; }
+  .time-block:nth-child(5)  { animation-delay: 0.25s; }
+  .time-block:nth-child(6)  { animation-delay: 0.30s; }
+  .time-block:nth-child(7)  { animation-delay: 0.35s; }
+  .time-block:nth-child(8)  { animation-delay: 0.40s; }
+  .time-block:nth-child(9)  { animation-delay: 0.45s; }
+  .time-block:last-child { border-bottom: none; }
 
   @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-  .row.header-row {
-    opacity: 1; transform: none; animation: none;
-    margin-bottom: 16px;
-    position: sticky; top: 0; z-index: 10;
-    background: var(--bg);
-    padding: 14px 0;
-    border-bottom: 2px solid var(--border);
-  }
-
-  .col-header {
-    font-family: 'DM Mono', monospace;
-    font-size: 18px; font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0 20px;
-  }
-  .col-header.meal  { color: var(--meal); }
-  .col-header.suppl { color: var(--suppl); }
-  .col-header.train { color: var(--train); }
-
   .time-col {
+    flex-shrink: 0;
+    width: 60px;
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    padding-top: 24px;
+    padding-top: 2px;
     position: relative;
   }
 
   .time-col::after {
     content: '';
     position: absolute;
-    right: -5px; top: 30px;
-    width: 10px; height: 10px;
+    right: -5px; top: 8px;
+    width: 9px; height: 9px;
     border-radius: 50%;
-    background: var(--surface);
+    background: var(--bg);
     border: 1px solid var(--border);
     z-index: 2;
   }
 
   .time-label {
     font-family: 'DM Mono', monospace;
-    font-size: 20px; font-weight: 700;
+    font-size: 13px; font-weight: 700;
     color: #ffffff;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     line-height: 1;
   }
 
-  .cell {
-    border-left: 1px solid var(--border);
-    padding: 20px;
-    min-height: 100px;
-    transition: background 0.2s;
-  }
-
-  .cell-inner {
+  /* ── カードエリア ── */
+  .cards-col {
+    flex: 1;
+    padding-left: 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    height: 100%;
+    gap: 10px;
   }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  /* カテゴリーに応じた左ボーダー */
+  .card.meal  { border-left: 3px solid var(--meal); }
+  .card.suppl { border-left: 3px solid var(--suppl); }
+  .card.train { border-left: 3px solid var(--train); }
+  .card.life  { border-left: 3px solid var(--life); }
 
   .pill {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
+    gap: 6px;
+    padding: 4px 11px;
     border-radius: 99px;
-    font-size: 18px; font-weight: 700;
+    font-size: 11px; font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
     width: fit-content;
+    margin-bottom: 8px;
   }
   .pill.meal  { background: rgba(96,212,240,0.12); color: var(--meal);  border: 1px solid rgba(96,212,240,0.25); }
   .pill.suppl { background: rgba(200,240,96,0.12); color: var(--suppl); border: 1px solid rgba(200,240,96,0.25); }
   .pill.train { background: rgba(240,96,160,0.12); color: var(--train); border: 1px solid rgba(240,96,160,0.25); }
   .pill.life  { background: rgba(240,160,96,0.12); color: var(--life);  border: 1px solid rgba(240,160,96,0.25); }
 
-  .pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .meal  .pill-dot { background: var(--meal); }
   .suppl .pill-dot { background: var(--suppl); }
   .train .pill-dot { background: var(--train); }
   .life  .pill-dot { background: var(--life); }
 
-  .cell-title {
-    font-size: 22px; font-weight: 700;
+  .card-title {
+    font-size: 17px; font-weight: 700;
     color: #ffffff; line-height: 1.3;
+    margin-bottom: 6px;
   }
 
-  .cell-detail {
-    font-size: 18px; font-weight: 500;
-    color: var(--muted); line-height: 1.7;
+  .card-detail {
+    font-size: 14px; font-weight: 500;
+    color: var(--muted); line-height: 1.9;
   }
-  .cell-detail span { display: block; }
+
+  .card-detail span { display: block; }
 
   .highlight {
     color: var(--accent);
     font-family: 'DM Mono', monospace;
-    font-size: 18px; font-weight: 700;
+    font-size: 13px; font-weight: 700;
   }
 
   .note-tag {
     display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
+    padding: 3px 9px;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 11px;
     font-family: 'DM Mono', monospace;
     font-weight: 700;
     background: rgba(240,160,96,0.1);
     color: var(--life);
     border: 1px solid rgba(240,160,96,0.2);
     width: fit-content;
-    margin-top: 4px;
+    margin-top: 6px;
   }
 
-  /* ── 筋トレ 2コース ── */
+  /* ── 筋トレコース ── */
   .courses {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
     margin-top: 12px;
+  }
+
+  @media (max-width: 420px) {
+    .courses { grid-template-columns: 1fr; }
   }
 
   .course-card {
@@ -273,87 +283,88 @@
   }
 
   .course-head {
-    padding: 12px 18px;
+    padding: 10px 14px;
     font-family: 'DM Mono', monospace;
-    font-size: 18px; font-weight: 700;
-    letter-spacing: 0.05em;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
   }
-  .course-head.squat { background: rgba(96,212,240,0.15); color: var(--meal);  border-bottom: 1px solid rgba(96,212,240,0.2); }
+  .course-head.squat { background: rgba(96,212,240,0.15); color: var(--meal); border-bottom: 1px solid rgba(96,212,240,0.2); }
   .course-head.push  { background: rgba(240,96,160,0.15);  color: var(--train); border-bottom: 1px solid rgba(240,96,160,0.2); }
 
-  .course-body { padding: 14px 18px; background: rgba(255,255,255,0.02); }
+  .course-body { padding: 12px 14px; background: rgba(255,255,255,0.02); }
 
   .course-day {
     font-family: 'DM Mono', monospace;
-    font-size: 22px; font-weight: 700;
+    font-size: 13px; font-weight: 700;
     color: #ffffff;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .course-moves {
-    font-size: 17px; font-weight: 600;
-    color: #ffffff; line-height: 2.1;
+    font-size: 13px; font-weight: 600;
+    color: #e0e0e0; line-height: 2;
   }
 
   .course-moves span {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 6px;
   }
 
   .course-moves span::before {
     content: '›';
-    font-size: 22px; font-weight: 700;
+    font-size: 16px; font-weight: 700;
     opacity: 0.4; flex-shrink: 0;
+    margin-top: -1px;
   }
 
   .rest-row {
     margin-top: 12px;
-    padding: 12px 18px;
+    padding: 10px 14px;
     border-radius: 8px;
     background: rgba(255,255,255,0.02);
     border: 1px solid var(--border);
     font-family: 'DM Mono', monospace;
-    font-size: 18px; font-weight: 700;
+    font-size: 13px; font-weight: 700;
     color: var(--muted);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
   }
 
-  .rest-day { color: #ffffff; font-size: 22px; }
+  .rest-day { color: #ffffff; font-size: 15px; }
 
-  /* Notes */
+  /* ── 注意事項・モニタリング ── */
   .notes-section {
-    margin-top: 56px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 
   .note-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 28px;
+    padding: 22px 18px;
     opacity: 0;
     animation: fadeIn 0.4s ease 0.7s forwards;
   }
 
   .note-card-title {
     font-family: 'DM Mono', monospace;
-    font-size: 16px; font-weight: 700;
+    font-size: 11px; font-weight: 700;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     color: var(--muted);
   }
 
   .note-item {
-    font-size: 17px; font-weight: 600;
+    font-size: 14px; font-weight: 500;
     color: var(--muted); line-height: 1.7;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
@@ -367,37 +378,49 @@
     color: var(--accent);
     font-family: 'DM Mono', monospace;
     flex-shrink: 0;
-    font-size: 16px;
+    font-size: 13px;
     margin-top: 2px;
   }
 
   .monitor-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
   .monitor-item {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 16px;
+    padding: 14px;
     border-radius: 10px;
     background: rgba(255,255,255,0.02);
     border: 1px solid var(--border);
   }
 
   .monitor-label {
-    font-size: 15px; font-weight: 700;
+    font-size: 11px; font-weight: 700;
     color: var(--muted);
     font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
   }
 
   .monitor-value {
-    font-size: 22px;
+    font-size: 18px;
     color: var(--accent2);
     font-weight: 700;
     font-family: 'DM Mono', monospace;
+  }
+
+  /* ── スティッキー時間帯ヘッダー（大画面） ── */
+  @media (min-width: 600px) {
+    .container { padding: 56px 32px 100px; }
+    .time-label { font-size: 16px; }
+    .time-col { width: 72px; }
+    .timeline::before { left: 66px; }
+    .cards-col { padding-left: 24px; }
+    .card-title { font-size: 19px; }
+    .card-detail { font-size: 15px; }
   }
 </style>
 </head>
@@ -405,9 +428,12 @@
 <div class="container">
 
   <header>
-    <div class="tag">42M · Body Optimization Protocol · 2025</div>
+    <span class="tag">42M · Body Optimization Protocol · 2025</span>
     <h1>Daily <em>Precision</em><br>Schedule</h1>
-    <div class="subtitle">06:30 — 22:30 · Protein 72g/day · H₂O 2.5–3.0L</div>
+    <div class="subtitle">
+      06:30 — 22:30<br>
+      Protein 72g/day · H₂O 2.5–3.0L
+    </div>
   </header>
 
   <div class="legend">
@@ -419,87 +445,71 @@
 
   <div class="timeline">
 
-    <div class="row header-row">
-      <div></div>
-      <div class="col-header meal">食事</div>
-      <div class="col-header suppl">サプリ</div>
-      <div class="col-header train">筋トレ・運動</div>
-    </div>
-
     <!-- 06:30 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">06:30</div></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card life">
           <div class="pill life"><span class="pill-dot"></span>起床</div>
-          <div class="cell-title">白湯 500mL</div>
-          <div class="cell-detail"><span>＋ レモン汁少量</span></div>
+          <div class="card-title">白湯 500mL</div>
+          <div class="card-detail"><span>＋ レモン汁少量</span></div>
         </div>
       </div>
-      <div class="cell"></div>
-      <div class="cell"></div>
     </div>
 
     <!-- 07:00 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">07:00</div></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card train">
           <div class="pill train"><span class="pill-dot"></span>有酸素</div>
-          <div class="cell-title">早歩き 40分</div>
-          <div class="cell-detail"><span>脂肪燃焼の土台づくり</span></div>
+          <div class="card-title">早歩き 40分</div>
+          <div class="card-detail"><span>脂肪燃焼の土台づくり</span></div>
         </div>
       </div>
     </div>
 
     <!-- 08:30 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">08:30</div></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card meal">
           <div class="pill meal"><span class="pill-dot"></span>朝食</div>
-          <div class="cell-title">タンパク質 24g</div>
-          <div class="cell-detail">
+          <div class="card-title">タンパク質 24g</div>
+          <div class="card-detail">
             <span>卵</span>
             <span>ほうれん草（茹でこぼし）</span>
             <span>えだまめ</span>
             <span>しらす（カルシウム源）</span>
           </div>
         </div>
-      </div>
-      <div class="cell">
-        <div class="cell-inner">
+        <div class="card suppl">
           <div class="pill suppl"><span class="pill-dot"></span>サプリ①</div>
-          <div class="cell-detail">
+          <div class="card-detail">
             <span>AGA薬（フィナステリド・ミノキシジル）</span>
             <span>ビタミンC <span class="highlight">250mg</span></span>
           </div>
         </div>
       </div>
-      <div class="cell"></div>
     </div>
 
     <!-- 12:00 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">12:00</div></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card meal">
           <div class="pill meal"><span class="pill-dot"></span>昼食</div>
-          <div class="cell-title">タンパク質 24g</div>
-          <div class="cell-detail">
+          <div class="card-title">タンパク質 24g</div>
+          <div class="card-detail">
             <span>サケ（EPA/DHA）</span>
             <span>納豆</span>
             <span>アボカド</span>
             <span>ご飯</span>
           </div>
         </div>
-      </div>
-      <div class="cell">
-        <div class="cell-inner">
+        <div class="card suppl">
           <div class="pill suppl"><span class="pill-dot"></span>サプリ②</div>
-          <div class="cell-detail">
+          <div class="card-detail">
             <span>ビタミンD・K</span>
             <span>EPA/DHA</span>
             <span>アスタキサンチン</span>
@@ -507,44 +517,38 @@
           </div>
         </div>
       </div>
-      <div class="cell"></div>
     </div>
 
     <!-- 15:00 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">15:00</div></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card meal">
           <div class="pill meal"><span class="pill-dot"></span>間食</div>
-          <div class="cell-detail">
+          <div class="card-detail">
             <span>ブルーベリー</span>
             <span>ソイプロテイン（水割）</span>
           </div>
         </div>
-      </div>
-      <div class="cell">
-        <div class="cell-inner">
+        <div class="card suppl">
           <div class="pill suppl"><span class="pill-dot"></span>サプリ③</div>
-          <div class="cell-detail">
+          <div class="card-detail">
             <span>亜鉛（銅入り）</span>
             <span>ホスファチジルセリン <span class="highlight">200-300mg</span></span>
             <div class="note-tag">抗ヒスタミン薬と2h以上ずらす</div>
           </div>
         </div>
       </div>
-      <div class="cell"></div>
     </div>
 
     <!-- 18:00 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">18:00</div></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card train">
           <div class="pill train"><span class="pill-dot"></span>筋トレ</div>
-          <div class="cell-title">スロートレーニング 30分</div>
-          <div class="cell-detail"><span>4秒↓ 静止なし 4秒↑｜朝の有酸素と3h以上の間隔</span></div>
+          <div class="card-title">スロートレーニング 30分</div>
+          <div class="card-detail"><span>4秒↓ 静止なし 4秒↑｜朝の有酸素と3h以上の間隔</span></div>
 
           <div class="courses">
             <div class="course-card">
@@ -580,13 +584,13 @@
     </div>
 
     <!-- 19:30 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">19:30</div></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card meal">
           <div class="pill meal"><span class="pill-dot"></span>夕食</div>
-          <div class="cell-title">タンパク質 24g</div>
-          <div class="cell-detail">
+          <div class="card-title">タンパク質 24g</div>
+          <div class="card-detail">
             <span>鶏肉 <span class="highlight">70g目安</span></span>
             <span>豆腐・エノキ</span>
             <span>たっぷりの野菜</span>
@@ -594,19 +598,15 @@
           </div>
         </div>
       </div>
-      <div class="cell"></div>
-      <div class="cell"></div>
     </div>
 
     <!-- 21:00 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">21:00</div></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card life">
           <div class="pill life"><span class="pill-dot"></span>ケア・入浴</div>
-          <div class="cell-detail">
+          <div class="card-detail">
             <span>38〜39度・15分以内</span>
             <span>側頭筋マッサージ</span>
           </div>
@@ -615,23 +615,22 @@
     </div>
 
     <!-- 22:30 -->
-    <div class="row">
+    <div class="time-block">
       <div class="time-col"><div class="time-label">22:30</div></div>
-      <div class="cell">
-        <div class="cell-inner">
+      <div class="cards-col">
+        <div class="card life">
           <div class="pill life"><span class="pill-dot"></span>就寝前</div>
-          <div class="cell-detail">
+          <div class="card-detail">
             <span>コラーゲンペプチド</span>
             <span>十分な水分補給</span>
           </div>
         </div>
       </div>
-      <div class="cell"></div>
-      <div class="cell"></div>
     </div>
 
   </div>
 
+  <!-- 注意事項・モニタリング -->
   <div class="notes-section">
     <div class="note-card">
       <div class="note-card-title">注意事項</div>
@@ -654,7 +653,7 @@
         </div>
         <div class="monitor-item">
           <div class="monitor-label">ホモシステイン</div>
-          <div class="monitor-value">≤ 10 μmol/L</div>
+          <div class="monitor-value">≤ 10 μmol</div>
         </div>
         <div class="monitor-item">
           <div class="monitor-label">血圧</div>
@@ -662,7 +661,7 @@
         </div>
         <div class="monitor-item" style="grid-column:1/-1;">
           <div class="monitor-label">胃内視鏡（年1回）</div>
-          <div class="monitor-value" style="font-size:18px">NBI/拡大内視鏡 スキルス胃がん早期発見</div>
+          <div class="monitor-value" style="font-size:14px; line-height:1.5">NBI/拡大内視鏡<br>スキルス胃がん早期発見</div>
         </div>
       </div>
     </div>
